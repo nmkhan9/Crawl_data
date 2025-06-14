@@ -1,46 +1,85 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+products = []
 
-data=[]
 for i in range (1,10):
     response = requests.get(f'https://clickbuy.com.vn/dien-thoai?page={i}')
     soup = BeautifulSoup(response.content, "html.parser")
     items = soup.find_all('div',class_='list-products__item')
-
     for item in items :
+
         a_tag = item.find('a')
-        link = 'https://clickbuy.com.vn' + a_tag['href']
-        name = a_tag['title']
-        info_price = a_tag.find('div',class_='detail')
-        new_price = info_price.find('ins',class_='new-price').get_text(strip=True)
-        old_price_tag = info_price.find('del',class_='old-price')
-        if old_price_tag :
-            old_price = old_price_tag.get_text(strip=True)
-        else :
-            old_price =None
-        rate_title = info_price.find('div',class_='rate_title').get_text(strip=True)
-        gift_detail_tag = info_price.find('div',class_='gift-detail')
-        if gift_detail_tag:
-            gift_detail = gift_detail_tag.get_text(strip=True)
-        else :
-            gift_detail=None
-        deal_tag = info_price.find('div',class_='ex_pricesale percent d-none')
-        if int(deal_tag['data-price1']) != 0 :
-            deal=str(int(round((1-int(deal_tag['data-price'])/int(deal_tag['data-price1']))*100,0))) +'%'
-        else :
-            deal='0%'
-        product = {
-            'Name_product':name,
-            'New_price':new_price,
-            'Old_proce':old_price,
-            'Deal':deal,
-            'Gift_detail':gift_detail,
-            'Number_of_review':rate_title,
-            'Link_product' : link
-        }
-        data.append(product)
+        link0 = 'https://clickbuy.com.vn' + a_tag['href']
 
-df=pd.DataFrame(data)
+
+        response1 = requests.get(link0)
+        soup1 = BeautifulSoup(response1.content, "html.parser")
+        related_versions = soup1.find_all('div', class_='related_versions__item')
+        version_links = []
+
+        for version in related_versions:
+            a_tag = version.find('a')
+            onclick = a_tag.get('onclick')
+            if onclick:
+                link1 = onclick.split("'")[1]
+                full_link = 'https://clickbuy.com.vn' + link1
+                version_links.append(full_link)
+
+
+        for url in version_links:
+            response2 = requests.get(url)
+            soup2 = BeautifulSoup(response2.content, "html.parser")
+
+            product = {}
+
+            name_tag = soup2.find('h1', class_="product-name")
+            product_name = name_tag.get_text(strip=True) if name_tag else None
+
+            price_new_tag = soup2.find("p", class_="price")
+            price_new_text = price_new_tag.get_text(strip=True) if price_new_tag else None
+
+            price_old_tag = soup2.find("p", class_="price-old")
+            price_old_text = price_old_tag.get_text(strip=True) if price_old_tag else None
+
+
+
+            product = {
+                'Product_Name': product_name,
+                'Product_Link': url,
+                'New_Price': price_new_text,
+                'Old_Price': price_old_text
+            }
+
+
+            details = soup2.find_all('tbody')
+            if details:
+                fields = {
+                    "screen_size": "Kích thước màn hình",
+                    "cpu": "CPU",
+                    "os": "Hệ điều hành",
+                    "internal_storage": "Bộ nhớ trong",
+                    "ram": "RAM",
+                    "battery_capacity": "Dung lượng pin",
+                    "color": "Màu sắc",
+                    "product_condition": "Tình trạng SP",
+                    "brand": "Hãng sản xuất",
+                    "main_camera": "Camera chính",
+                    "selfie_camera": "Camera phụ",
+                    "resolution": "Độ phân giải màn hình",
+                    "fast_charging": "Sạc nhanh"
+                }
+
+                table = details[-1]
+                for key, label in fields.items():
+                    tag = table.find('th', string=label)
+                    value = tag.find_next('td').get_text(strip=True) if tag else None
+                    product[key] = value
+
+            products.append(product)
+
+
+df = pd.DataFrame(products)
+df = df.drop_duplicates(subset=['Product_Name', 'Product_Link'], keep='first')
+
 df.to_csv('clickbuy_mobile.csv', index=False, encoding='utf-8-sig')
-
