@@ -1,5 +1,6 @@
 import requests
-all_items=[]
+import pandas as pd
+
 base = "https://muaban.net/listing/v1/classifieds/listing"
 params = {
     "subcategory_id": 169,
@@ -42,16 +43,21 @@ def parse_item(item):
         "SĐT (hiển thị)": item.get("phone_display"),
         "SĐT (mã hóa)": item.get("phone_enc"),
     }
+all_items =[]
+seen_ids = set()
+for page in range(10):
+    params["offset"] = page * 20
+    res = requests.get(base, params=params, headers=headers)
+    data = res.json()
+    items = data.get("items", [])
+    for item in items:
+        item_id = item.get("id")
+        if item_id in seen_ids:
+            continue
+        seen_ids.add(item_id)
+        all_items.append(parse_item(item))
 
-import pandas as pd
 
-all_items = []
-
-# Crawl 5 trang (offset = page * 20)
-for item in items:
-    all_items.append(parse_item(item))
-
-# Export ra CSV
 df = pd.DataFrame(all_items)
 df.to_csv("08.muaban_bds.csv", index=False, encoding="utf-8-sig")
 
