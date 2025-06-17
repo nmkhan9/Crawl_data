@@ -23,4 +23,4 @@ df.loc[df['Rank']=='1B','Rank']=1.2
 
 df['Rank']=df['Rank'].astype('float')
 df=df.sort_values('Rank').reset_index(drop=True)
-print(df.head())
+df.to_csv("02.The_best_music.csv",index=False,encoding="utf-8-sig")
