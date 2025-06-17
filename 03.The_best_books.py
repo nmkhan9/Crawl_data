@@ -18,4 +18,5 @@ for i,text in enumerate (texts) :
     }
     data.append(item)
 
-df=pd.DataFrame(data)
+df = pd.DataFrame(data)
+df.to_csv("03.The_best_books.csv",index=False,encoding="utf-8-sig")
