@@ -23,6 +23,6 @@ for tag in all_strong_tags:
             "yop":match.group(3),
             "director": description[-1]
         })
-df=pd.DataFrame(movies)
-df=df.sort_values('rank').reset_index(drop=True)
-print(df.head())
+
+df = pd.DataFrame(movies)
+df.to_csv("01.The_best_movies.csv",index=False,encoding="utf-8-sig")
