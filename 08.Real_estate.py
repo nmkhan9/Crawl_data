@@ -60,4 +60,3 @@ for page in range(10):
 
 df = pd.DataFrame(all_items)
 df.to_csv("08.muaban_bds.csv", index=False, encoding="utf-8-sig")
-
