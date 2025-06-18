@@ -17,7 +17,6 @@ res = requests.get(base,params=params, headers=headers)
 data = res.json()
 items = data["items"]
 
-
 def parse_item(item):
     attributes = item.get("attributes", [])
 
@@ -28,24 +27,16 @@ def parse_item(item):
             return ""
 
     return {
-        "ID": item.get("id"),
-        "Tiêu đề": item.get("title"),
-        "Tóm tắt": item.get("summary", ""),
         "Diện tích": get_attr(0),
         "Phòng ngủ": get_attr(1),
         "WC": get_attr(2),
-        "Giá": item.get("price_display"),
         "Giá gốc": item.get("price"),
-        "Khu vực": item.get("location"),
-        "Ngày đăng": item.get("publish_at", "")[:10],
-        "Số ảnh": item.get("total_images"),
-        "Link": f"https://muaban.net{item.get('url')}",
-        "SĐT (hiển thị)": item.get("phone_display"),
-        "SĐT (mã hóa)": item.get("phone_enc"),
+        "Loại": item.get("category_name"),
+        "Ngày đăng": item.get("publish_at", "")[:10]
     }
 all_items =[]
 seen_ids = set()
-for page in range(10):
+for page in range(70):
     params["offset"] = page * 20
     res = requests.get(base, params=params, headers=headers)
     data = res.json()
