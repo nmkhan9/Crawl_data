@@ -1,3 +1,8 @@
+"""
+link = "https://www.filmsfatale.com/blog/2021/8/2/the-best-100-music-videos-of-all-time"
+"""
+
+
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
