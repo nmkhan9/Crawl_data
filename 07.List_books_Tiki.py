@@ -1,3 +1,7 @@
+"""
+link = "https://tiki.vn/nha-sach-tiki/c8322"
+"""
+
 import requests
 import pandas as pd
 

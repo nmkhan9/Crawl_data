@@ -1,3 +1,8 @@
+"""
+link = "https://clickbuy.com.vn/dien-thoai?page="
+"""
+
+
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd

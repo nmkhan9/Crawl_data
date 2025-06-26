@@ -1,3 +1,7 @@
+"""
+link = "https://muaban.net/bat-dong-san"
+"""
+
 import requests
 import pandas as pd
 
