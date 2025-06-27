@@ -87,4 +87,4 @@ for i in range (1,10):
 df = pd.DataFrame(products)
 df = df.drop_duplicates(subset=['Product_Name', 'Product_Link'], keep='first')
 
-df.to_csv('clickbuy_mobile.csv', index=False, encoding='utf-8-sig')
+df.to_csv('06.clickbuy_mobile.csv', index=False, encoding='utf-8-sig')
